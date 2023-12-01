@@ -1,16 +1,16 @@
 
 def read_data():
-    file = 'Day??/t_input.txt' if TESTING else 'Day??/input.txt'
+    file = 'Days/Day??/input.txt'
     with open(file, 'r') as f:
         return f.read()
 
 
-def p1(data):
-    pass
+def p1(data) -> int:
+    return -1
 
 
-def p2(data):
-    pass
+def p2(data) -> int:
+    return -1
 
 
 def main():
@@ -19,8 +19,6 @@ def main():
     print(f'P1: {s1}')
     print(f'P2: {s2}')
 
-
-TESTING = True
 
 if __name__ == '__main__':
     main()

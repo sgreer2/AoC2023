@@ -4,7 +4,7 @@ from math import inf
 
 
 def read_data():
-    file = 'Day01/t_input.txt' if TESTING else 'Day01/input.txt'
+    file = 'Days/Day01/input.txt'
     with open(file, 'r') as f:
         return f.read().split('\n')[:-1]
 
@@ -66,8 +66,6 @@ def main():
     print(f'P1: {s1}')
     print(f'P2: {s2}')
 
-
-TESTING = False
 
 if __name__ == '__main__':
     main()

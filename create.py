@@ -3,13 +3,11 @@ from os.path import isdir, isfile, dirname
 from os import mkdir
 
 
-def create_files(num):
+def create_files(num: int):
     """Will only create folder/files if they don't exist."""
-    day = str(num)
-    if len(day) == 1:
-        day = '0' + day
+    day = f'{num:02d}'
     project_dir = dirname(__file__)
-    day_dir = project_dir + f'\\Day{day}'
+    day_dir = project_dir + f'\\Days\\Day{day}'
 
     # Create Folder if it doesn't exist
     if not isdir(day_dir):
@@ -18,9 +16,6 @@ def create_files(num):
     # Create empty txt input files
     if not isfile(day_dir + f'\\input.txt'):
         f = open(day_dir + f'\\input.txt', 'w')
-        f.close()
-    if not isfile(day_dir + f'\\t_input.txt'):
-        f = open(day_dir + f'\\t_input.txt', 'w')
         f.close()
 
     # Create the .py file
@@ -43,9 +38,13 @@ def main():
     if not argv[1].isdigit():  # Arg is not a number
         print("Invalid argument. Value must be a number.")
         return
-    # Add another check to ensure it's within the 1-25 range?
 
-    create_files(argv[1])
+    day = int(argv[1])
+    if day not in range(1, 26):
+        print('Day # must be 1-25')
+        return
+
+    create_files(day)
 
 
 if __name__ == '__main__':
