@@ -14,15 +14,24 @@ def create_files(num: int):
         mkdir(day_dir)
 
     # Create empty txt input files
-    if not isfile(day_dir + f'\\input.txt'):
-        f = open(day_dir + f'\\input.txt', 'w')
-        f.close()
+    # if not isfile(day_dir + f'\\input.txt'):
+    f = open(day_dir + f'\\input.txt', 'w')
+    f.close()
 
     # Create the .py file
     if not isfile(day_dir + f'\\day_{day}.py'):
         with open(day_dir + f'\\day_{day}.py', 'w') as f:
+            # Read data from Day_Template.py file and replace ?? with 'day' variable
+            with open(f'{project_dir}\\Templates\\Day_Template.py', 'r') as template:
+                data = template.read()
+            data = data.replace('??', day)
+            f.write(data)
+
+    # Create the Test file for the Day
+    if not isfile(project_dir + f'\\Tests\\day{day}_test.py'):
+        with open(project_dir + f'\\Tests\\day{day}_test.py', 'w') as f:
             # Read data from Template .py file and replace ?? with 'day' variable
-            with open(f'{project_dir}\\Template.py', 'r') as template:
+            with open(f'{project_dir}\\Templates\\Day_Test_Template.py', 'r') as template:
                 data = template.read()
             data = data.replace('??', day)
             f.write(data)
