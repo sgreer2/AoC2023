@@ -18,6 +18,10 @@ def create_files(num: int):
     f = open(day_dir + f'\\input.txt', 'w')
     f.close()
 
+    # Create the __init__.py file
+    f = open(day_dir + f'\\__init__.py', 'w')
+    f.close()
+
     # Create the .py file
     if not isfile(day_dir + f'\\day_{day}.py'):
         with open(day_dir + f'\\day_{day}.py', 'w') as f:
