@@ -34,7 +34,7 @@ def _get_session() -> str:
 
 
 def _save_input(day: int, data: str) -> None:
-    dir = f'./Day{day:02d}'
+    dir = f'./Days/Day{day:02d}'
     if not isdir(dir):
         mkdir(dir)
     file = f'{dir}/input.txt'
