@@ -1,6 +1,5 @@
 
-from re import findall
-from math import inf
+from re import findall, search, Match
 
 
 def read_data():
@@ -21,41 +20,36 @@ def p1(lines: list[str]) -> int:
 
 
 def p2(lines: list[str]) -> int:
+
     numbers = {
-        '1': 'one',
-        '2': 'two',
-        '3': 'three',
-        '4': 'four',
-        '5': 'five',
-        '6': 'six',
-        '7': 'seven',
-        '8': 'eight',
-        '9': 'nine'
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
     }
     total = 0
+    pattern = r'\d|' + "|".join(numbers.keys())
+    rpattern = r'\d|' + "|".join([n[::-1] for n in numbers.keys()])
 
     for line in lines:
-        lowest = [inf, '']
-        highest = [-inf, '']
-        for k, v in numbers.items():
-            if k in line:
-                index = line.index(k)
-                rindex = line.rindex(k)
-                if index < lowest[0]:
-                    lowest = [index, k]
-                if rindex > highest[0]:
-                    highest = [rindex, k]
-
-            if v in line:
-                index = line.index(v)
-                rindex = line.rindex(v)
-                if index < lowest[0]:
-                    lowest = [index, k]
-                if rindex > highest[0]:
-                    highest = [rindex, k]
-
-        val = ''.join([lowest[1], highest[1]])
-        total += int(val)
+        found: list[None | Match] = [None, None]
+        found[0] = search(pattern, line)
+        found[1] = search(rpattern, line[::-1])
+        nums = ['', '']
+        for index, n in enumerate(found):
+            n_str = ''
+            if n != None:
+                n_str = n.group(0) if index == 0 else n.group(0)[::-1]
+            if n_str in numbers.keys():
+                nums[index] = numbers[n_str]
+                continue
+            nums[index] = n_str
+        total += int(''.join(nums))
 
     return total
 
