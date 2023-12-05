@@ -14,6 +14,9 @@ def _download_input(day: int) -> str:
     cookies = {'session': _get_session()}
 
     response = get(url, cookies=cookies)
+    if response.status_code == 404:
+        print(f'Day {day} is not available yet.')
+        exit()
     response.raise_for_status()
 
     return response.text
@@ -45,10 +48,16 @@ def _save_input(day: int, data: str) -> None:
 
 if __name__ == '__main__':
     if len(argv) <= 1:
-        print(f'Please add the Day to get the 2023 input for.')
+        print(f'Specify a Day to get the 2023 input for, or use the --all flag to get all available inputs.')
         exit()
     if len(argv) > 2:
         print(f'Too many arguments. Please only input the Day.')
+        exit()
+
+    if argv[1] == '--all':
+        # Get all available inputs
+        for day in range(1, 26):
+            get_input(day)
         exit()
 
     if not argv[1].isdigit():

@@ -2,3 +2,4 @@ venv/
 session.txt
 *__pycache__*
 .pytest_cache/
+Days/*/input.txt
