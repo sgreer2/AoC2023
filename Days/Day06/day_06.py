@@ -11,29 +11,18 @@ def read_data():
     return data
 
 
-def _wins(hold_time: int, time_limit: int, record: int) -> bool:
-    if record < hold_time * (time_limit-hold_time):
-        return True
-    return False
-
-
 def p1(data: list[list[int]]) -> int:
     times, distances = data
     total = 1
     for i in range(len(times)):
         time_limit = times[i]
         distance_record = distances[i]
-        left_num = 0
-        right_num = 0
+        left_index = 0
         for i in range(1, time_limit):
-            if _wins(i, time_limit, distance_record):
-                left_num = i
+            if distance_record < i * (time_limit-i):
+                left_index = i
                 break
-        for i in range(time_limit-1, 0, -1):
-            if _wins(i, time_limit, distance_record):
-                right_num = i
-                break
-        total *= (right_num-left_num)+1
+        total *= (time_limit-(left_index * 2))+1
 
     return total
 
@@ -41,17 +30,12 @@ def p1(data: list[list[int]]) -> int:
 def p2(data: list[list[int]]) -> int:
     time_limit = int(''.join([str(num) for num in data[0]]))
     distance_record = int(''.join([str(num) for num in data[1]]))
-    left_num = 0
-    right_num = 0
+    left_index = 0
     for i in range(1, time_limit):
-        if _wins(i, time_limit, distance_record):
-            left_num = i
+        if distance_record < i * (time_limit-i):
+            left_index = i
             break
-    for i in range(time_limit, 0, -1):
-        if _wins(i, time_limit, distance_record):
-            right_num = i
-            break
-    return (right_num - left_num)+1
+    return (time_limit-(left_index * 2))+1
 
 
 def main():
