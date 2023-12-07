@@ -11,37 +11,47 @@ def read_data():
     return data
 
 
+def _wins(hold_time: int, time_limit: int, record: int) -> bool:
+    if record < hold_time * (time_limit-hold_time):
+        return True
+    return False
+
+
 def p1(data: list[list[int]]) -> int:
     times, distances = data
-    wins = []
-
+    total = 1
     for i in range(len(times)):
         time_limit = times[i]
         distance_record = distances[i]
-        win_count = 0
+        left_num = 0
+        right_num = 0
+        for i in range(1, time_limit):
+            if _wins(i, time_limit, distance_record):
+                left_num = i
+                break
+        for i in range(time_limit-1, 0, -1):
+            if _wins(i, time_limit, distance_record):
+                right_num = i
+                break
+        total *= (right_num-left_num)+1
 
-        for hold_time in range(1, time_limit-1):
-            distance_travel = hold_time * (time_limit-hold_time)
-            if distance_travel > distance_record:
-                win_count += 1
-        wins.append(win_count)
-
-    total = 1
-    for w in wins:
-        total *= w
     return total
 
 
 def p2(data: list[list[int]]) -> int:
     time_limit = int(''.join([str(num) for num in data[0]]))
     distance_record = int(''.join([str(num) for num in data[1]]))
-    win_count = 0
-
-    for hold_time in range(1, time_limit-1):
-        distance_travel = hold_time * (time_limit-hold_time)
-        if distance_travel > distance_record:
-            win_count += 1
-    return win_count
+    left_num = 0
+    right_num = 0
+    for i in range(1, time_limit):
+        if _wins(i, time_limit, distance_record):
+            left_num = i
+            break
+    for i in range(time_limit, 0, -1):
+        if _wins(i, time_limit, distance_record):
+            right_num = i
+            break
+    return (right_num - left_num)+1
 
 
 def main():
