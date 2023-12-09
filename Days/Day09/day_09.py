@@ -9,29 +9,20 @@ def read_data():
     return sequences
 
 
-def _allZeroes(array: list[int]) -> bool:
-    for num in array:
-        if num != 0:
-            return False
-    return True
-
-
 def p1(sequences: list[list[int]]) -> int:
     next_value_sum = 0
 
     for sequence in sequences:
-        history = [sequence]
-        while True:
-            if _allZeroes(history[-1]):
-                break
-            diffs = []
-            for i in range(len(history[-1])-1):
-                diffs.append(history[-1][i+1] - history[-1][i])
-            history.append(diffs)
-
+        cur_sequence = sequence
         next_value = 0
-        for line in history:
-            next_value += line[-1]
+
+        while any(cur_sequence):
+            next_value += cur_sequence[-1]
+            diffs = []
+            for i in range(len(cur_sequence)-1):
+                diffs.append(cur_sequence[i+1] - cur_sequence[i])
+            cur_sequence = diffs
+
         next_value_sum += next_value
     return next_value_sum
 
@@ -40,18 +31,19 @@ def p2(sequences: list[list[int]]) -> int:
     next_value_sum = 0
 
     for sequence in sequences:
-        history = [sequence]
-        while True:
-            if _allZeroes(history[-1]):
-                break
+        cur_sequence = sequence
+        firsts = []
+        while any(cur_sequence):
+            firsts.append(cur_sequence[0])
             diffs = []
-            for i in range(len(history[-1])-1):
-                diffs.append(history[-1][i+1] - history[-1][i])
-            history.append(diffs)
+            for i in range(len(cur_sequence)-1):
+                diffs.append(cur_sequence[i+1] - cur_sequence[i])
+            cur_sequence = diffs
 
         next_value = 0
-        for h_index in range(len(history)-1, 0, -1):
-            next_value = history[h_index-1][0] - next_value
+        for num in range(len(firsts)-1, -1, -1):
+            next_value = firsts[num] - next_value
+
         next_value_sum += next_value
     return next_value_sum
 
