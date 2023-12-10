@@ -1,4 +1,5 @@
 from collections import deque
+from math import floor
 
 
 def read_data():
@@ -28,7 +29,7 @@ def is_connected(current: tuple[int, int], next: tuple[int, int], next_char: str
 
 
 def p1(pipe_map: list[str]) -> int:
-    best_distances = {}
+    track = []
 
     start = (0, 0)
     for y, line in enumerate(pipe_map):
@@ -38,39 +39,35 @@ def p1(pipe_map: list[str]) -> int:
             break
 
     neighbours = PIPES['S']
-    best_distances[start] = 0
-    queue = deque()
+    track.append(start)
+    current_pos = start
+    previous_pos = start
+
     for x, y in neighbours:
-        s_x, s_y = start
-        steps = best_distances[start]
+        s_x, s_y = current_pos
         n_x, n_y = s_x+x, s_y+y
         n_char = pipe_map[n_y][n_x]
         n_pos = (n_x, n_y)
         if is_connected(start, n_pos, n_char):
-            queue.append(n_pos)
-            best_distances[n_pos] = steps+1
+            previous_pos = current_pos
+            current_pos = n_pos
+            break
 
-    while len(queue) > 0:
-        current_pos = queue.popleft()
-        steps = best_distances[current_pos]
+    while current_pos != start:
+        track.append(current_pos)
         current_x, current_y = current_pos
         current_char = pipe_map[current_y][current_x]
         neighbours = PIPES[current_char]
         for x, y in neighbours:
             n_x, n_y = current_x+x, current_y+y
             n_pos = (n_x, n_y)
-            if n_pos not in best_distances.keys():
-                queue.append(n_pos)
-                best_distances[n_pos] = steps+1
+            if n_pos == previous_pos:
                 continue
-            if steps+1 < best_distances[n_pos]:
-                queue.append(n_pos)
-                best_distances[n_pos] = steps+1
+            previous_pos = current_pos
+            current_pos = n_pos
+            break
 
-    furthest = 0
-    for distance in best_distances.values():
-        furthest = max(distance, furthest)
-    return furthest
+    return floor(len(track)/2)
 
 
 def p2(pipe_map: list[str]) -> int:
