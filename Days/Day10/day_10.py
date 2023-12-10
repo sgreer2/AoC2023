@@ -1,5 +1,5 @@
-from collections import deque
 from math import floor
+from matplotlib.path import Path
 
 
 def read_data():
@@ -28,9 +28,8 @@ def is_connected(current: tuple[int, int], next: tuple[int, int], next_char: str
     return False
 
 
-def p1(pipe_map: list[str]) -> int:
+def get_track_map(pipe_map: list[str]) -> list[tuple[int, int]]:
     track = []
-
     start = (0, 0)
     for y, line in enumerate(pipe_map):
         index = line.find('S')
@@ -66,12 +65,26 @@ def p1(pipe_map: list[str]) -> int:
             previous_pos = current_pos
             current_pos = n_pos
             break
+    return track
 
+
+def p1(pipe_map: list[str]) -> int:
+    track = get_track_map(pipe_map)
     return floor(len(track)/2)
 
 
 def p2(pipe_map: list[str]) -> int:
-    return -1
+    enclosed_count = 0
+    track = get_track_map(pipe_map)
+    track_path = Path(track)
+    for y in range(len(pipe_map)):
+        for x in range(len(pipe_map[y])):
+            pos = (x, y)
+            if pos in track:
+                continue
+            if track_path.contains_point(pos):
+                enclosed_count += 1
+    return enclosed_count
 
 
 def main():
@@ -85,4 +98,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 6733
-# Part 2 solution:
+# Part 2 solution: 435
