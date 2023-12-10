@@ -19,16 +19,6 @@ PIPES = {
 }
 
 
-def get_manhattan_distance(start: tuple[int, int], end: tuple[int, int]) -> int:
-    x_dist = start[0] - end[0]
-    if x_dist < 0:
-        x_dist *= -1
-    y_dist = start[1] - end[1]
-    if y_dist < 0:
-        y_dist *= -1
-    return x_dist + y_dist
-
-
 def is_connected(current: tuple[int, int], next: tuple[int, int], next_char: str) -> bool:
     neighbours = PIPES[next_char]
     for x, y in neighbours:
@@ -57,7 +47,7 @@ def p1(pipe_map: list[str]) -> int:
         n_char = pipe_map[n_y][n_x]
         n_pos = (n_x, n_y)
         if is_connected(start, n_pos, n_char):
-            queue.appendleft(n_pos)
+            queue.append(n_pos)
             best_distances[n_pos] = steps+1
 
     while len(queue) > 0:
@@ -68,16 +58,14 @@ def p1(pipe_map: list[str]) -> int:
         neighbours = PIPES[current_char]
         for x, y in neighbours:
             n_x, n_y = current_x+x, current_y+y
-            n_char = pipe_map[n_y][n_x]
             n_pos = (n_x, n_y)
-            if is_connected(current_pos, n_pos, n_char):
-                if n_pos not in best_distances.keys():
-                    queue.appendleft(n_pos)
-                    best_distances[n_pos] = steps+1
-                    continue
-                if steps+1 < best_distances[n_pos]:
-                    queue.appendleft(n_pos)
-                    best_distances[n_pos] = steps+1
+            if n_pos not in best_distances.keys():
+                queue.append(n_pos)
+                best_distances[n_pos] = steps+1
+                continue
+            if steps+1 < best_distances[n_pos]:
+                queue.append(n_pos)
+                best_distances[n_pos] = steps+1
 
     furthest = 0
     for distance in best_distances.values():
