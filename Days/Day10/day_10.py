@@ -1,15 +1,91 @@
+from collections import deque
+
 
 def read_data():
     file = 'Days/Day10/input.txt'
     with open(file, 'r') as f:
-        return f.read()
+        return f.read().split('\n')
 
 
-def p1(data) -> int:
-    return -1
+PIPES = {
+    '|': ((0, -1), (0, 1)),
+    '-': ((-1, 0), (1, 0)),
+    'L': ((0, -1), (1, 0)),
+    'J': ((0, -1), (-1, 0)),
+    '7': ((-1, 0), (0, 1)),
+    'F': ((1, 0), (0, 1)),
+    '.': (),
+    'S': ((0, -1), (0, 1), (-1, 0), (1, 0))
+}
 
 
-def p2(data) -> int:
+def get_manhattan_distance(start: tuple[int, int], end: tuple[int, int]) -> int:
+    x_dist = start[0] - end[0]
+    if x_dist < 0:
+        x_dist *= -1
+    y_dist = start[1] - end[1]
+    if y_dist < 0:
+        y_dist *= -1
+    return x_dist + y_dist
+
+
+def is_connected(current: tuple[int, int], next: tuple[int, int], next_char: str) -> bool:
+    neighbours = PIPES[next_char]
+    for x, y in neighbours:
+        if current == (next[0]+x, next[1]+y):
+            return True
+    return False
+
+
+def p1(pipe_map: list[str]) -> int:
+    best_distances = {}
+
+    start = (0, 0)
+    for y, line in enumerate(pipe_map):
+        index = line.find('S')
+        if index != -1:
+            start = (index, y)
+            break
+
+    neighbours = PIPES['S']
+    best_distances[start] = 0
+    queue = deque()
+    for x, y in neighbours:
+        s_x, s_y = start
+        steps = best_distances[start]
+        n_x, n_y = s_x+x, s_y+y
+        n_char = pipe_map[n_y][n_x]
+        n_pos = (n_x, n_y)
+        if is_connected(start, n_pos, n_char):
+            queue.appendleft(n_pos)
+            best_distances[n_pos] = steps+1
+
+    while len(queue) > 0:
+        current_pos = queue.popleft()
+        steps = best_distances[current_pos]
+        current_x, current_y = current_pos
+        current_char = pipe_map[current_y][current_x]
+        neighbours = PIPES[current_char]
+        for x, y in neighbours:
+            n_x, n_y = current_x+x, current_y+y
+            n_char = pipe_map[n_y][n_x]
+            n_pos = (n_x, n_y)
+            if is_connected(current_pos, n_pos, n_char):
+                if n_pos not in best_distances.keys():
+                    queue.appendleft(n_pos)
+                    best_distances[n_pos] = steps+1
+                    continue
+                if steps+1 < best_distances[n_pos]:
+                    queue.appendleft(n_pos)
+                    best_distances[n_pos] = steps+1
+
+    furthest = 0
+    for distance in best_distances.values():
+        furthest = max(distance, furthest)
+    return furthest
+
+
+def p2(pipe_map: list[str]) -> int:
     return -1
 
 
@@ -23,5 +99,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Part 1 solution:
+# Part 1 solution: 6733
 # Part 2 solution:
