@@ -38,7 +38,7 @@ In order to use the CLI getInput.py script you must first store you AoC session 
 | 08|  ✅  |  ✅  |
 | 09|  ✅  |  ✅  |
 | 10|  ✅  |  ✅  |
-| 11|  ⬛  |  ⬛  |
+| 11|  ✅  |  ✅  |
 | 12|  ⬛  |  ⬛  |
 | 13|  ⬛  |  ⬛  |
 | 14|  ⬛  |  ⬛  |
