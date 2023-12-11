@@ -40,7 +40,7 @@ def _solve(star_map: list[list[int]], age: int = 1) -> int:
             continue
         empty_cols.append(x)
 
-    distances = []
+    total = 0
     for index, pos in enumerate(galaxys[:-1]):
         x, y = pos
         for b_pos in galaxys[index+1:]:
@@ -54,9 +54,8 @@ def _solve(star_map: list[list[int]], age: int = 1) -> int:
             for r in empty_cols:
                 if x_min < r < x_max:
                     extra_count += age
-            distance = (x_max - x_min) + (y_max - y_min)
-            distances.append(distance + extra_count)
-    return sum(distances)
+            total += (x_max - x_min) + (y_max - y_min) + extra_count
+    return total
 
 
 def p1(star_map: list[list[int]]) -> int:
