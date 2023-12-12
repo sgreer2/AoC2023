@@ -1,3 +1,5 @@
+from functools import cache
+
 
 def read_data():
     file = 'Days/Day12/input.txt'
@@ -5,23 +7,31 @@ def read_data():
         return parse(f.read().split('\n')[:-1])
 
 
-def parse(array: list[str]) -> list[tuple[list[str], list[int]]]:
+def parse(array: list[str]) -> list[tuple[str, tuple[int]]]:
     new_array = []
     for line in array:
         string, nums = line.split()
-        new_array.append((list(string), [int(num) for num in nums.split(',')]))
+        new_array.append(
+            (string, tuple([int(num) for num in nums.split(',')]))
+        )
 
     return new_array
 
 
-def _solve(spots: list[str], nums: list[int]) -> int:
+def _unfold(spots: str, nums: tuple[int, ...]) -> tuple[str, tuple[int, ...]]:
+    new_string = '?'.join([spots] * 5)
+    return (new_string, nums*5)
+
+
+@cache
+def _solve(spots: str, nums: tuple[int, ...]) -> int:
     total = 0
 
     cur_num = nums[0]
-    next_nums = []
+    next_nums = ()
 
     if len(nums) > 1:
-        next_nums = nums[1:]
+        next_nums = tuple(nums[1:])
 
     for index, char in enumerate(spots):
         if char == '.':
@@ -49,15 +59,19 @@ def _solve(spots: list[str], nums: list[int]) -> int:
     return total
 
 
-def p1(spring_data: list[tuple[list[str], list[int]]]) -> int:
+def p1(spring_data: list[tuple[str, tuple[int, ...]]]) -> int:
     total_arrangements = 0
     for spots, nums in spring_data:
         total_arrangements += _solve(spots, nums)
     return total_arrangements
 
 
-def p2(spring_data: list[tuple[list[str], list[int]]]) -> int:
-    return -1
+def p2(spring_data: list[tuple[str, tuple[int, ...]]]) -> int:
+    total_arrangements = 0
+    for spots, nums in spring_data:
+        unfolded_spots, unfolded_nums = _unfold(spots, nums)
+        total_arrangements += _solve(unfolded_spots, unfolded_nums)
+    return total_arrangements
 
 
 def main():
@@ -71,4 +85,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 7653
-# Part 2 solution:
+# Part 2 solution: 60681419004564
