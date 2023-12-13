@@ -17,8 +17,6 @@ def _get_column(array: list[str], x_column: int) -> str:
 
 
 def _get_mirrored_index(array: list[str]) -> int:
-    mirror_index = -1
-    offset = 0
     for index, line in enumerate(array[:-1]):
         if line == array[index+1]:
             offset = 1
@@ -32,8 +30,39 @@ def _get_mirrored_index(array: list[str]) -> int:
                 if above != below:
                     break
                 offset += 1
+    return -1
 
-    return mirror_index
+
+def _get_difference_count(string_a: str, string_b: str) -> int:
+    count = 0
+    for index in range(len(string_a)):
+        if string_a[index] != string_b[index]:
+            count += 1
+        if count >= 2:
+            break
+    return count
+
+
+def _get_mirrored_index_v2(array: list[str]) -> int:
+    for index in range(len(array)-1):
+        count = _get_difference_count(array[index], array[index+1])
+        if count >= 2:
+            continue
+        offset = 1
+        while True:
+            above_index = index - offset
+            below_index = index + offset + 1
+            if above_index < 0 or below_index >= len(array):
+                if count == 0:
+                    break
+                return index
+            above = array[above_index]
+            below = array[below_index]
+            count += _get_difference_count(above, below)
+            if count >= 2:
+                break
+            offset += 1
+    return -1
 
 
 def p1(patterns: list[list[str]]) -> int:
@@ -55,7 +84,21 @@ def p1(patterns: list[list[str]]) -> int:
 
 
 def p2(patterns: list[list[str]]) -> int:
-    return -1
+    total = 0
+    for pattern in patterns:
+
+        mirrored_index = _get_mirrored_index_v2(pattern)
+        if mirrored_index != -1:
+            total += 100 * (mirrored_index + 1)
+            continue
+
+        cols = [_get_column(pattern, index)
+                for index in range(len(pattern[0]))
+                ]
+        mirrored_index = _get_mirrored_index_v2(cols)
+        total += mirrored_index + 1
+
+    return total
 
 
 def main():
@@ -69,4 +112,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 27664
-# Part 2 solution:
+# Part 2 solution: 33991
