@@ -29,7 +29,7 @@ In order to use the CLI getInput.py script you must first store you AoC session 
 |Day|Part 1|Part 2| Avg. Time   |
 |--:|:----:|:----:|:------------|
 | 01|  ✅  |  ✅  |2.04 ms     |
-| 02|  ✅  |  ✅  |3500 ns     |
+| 02|  ✅  |  ✅  |0.0035 ms   |
 | 03|  ✅  |  ✅  |0.06 sec    |
 | 04|  ✅  |  ✅  |0.43 ms     |
 | 05|  ✅  |  ✅  |7.15 min    |
