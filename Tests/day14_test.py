@@ -14,11 +14,20 @@ def test_p1():
         '#....###..',
         '#OO..#....'
     ]
-    assert p1(test_data) == 136
+    assert p1(tuple(test_data)) == 136
 
 
-# def test_p2():
-#     test_data = [
-
-#     ]
-#     assert p2(test_data) == -1
+def test_p2():
+    test_data = [
+        'O....#....',
+        'O.OO#....#',
+        '.....##...',
+        'OO.#O....O',
+        '.O.....O#.',
+        'O.#..O.#.#',
+        '..O..#O..O',
+        '.......O..',
+        '#....###..',
+        '#OO..#....'
+    ]
+    assert p2(tuple(test_data)) == 64
