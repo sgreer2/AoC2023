@@ -84,12 +84,27 @@ def p1(data: tuple[str, ...]) -> int:
 
 def p2(data: tuple[str, ...]) -> int:
     cycles = 1_000_000_000
+    visited = []
+    pattern = []
+
     for _ in range(cycles):
         data = _tilt_array(data, Direction.North)
         data = _tilt_array(data, Direction.West)
         data = _tilt_array(data, Direction.South)
         data = _tilt_array(data, Direction.East)
-    return _get_weight(data)
+
+        weight = _get_weight(data)
+        if weight in visited:
+            if weight in pattern and len(pattern) > 5:
+                break
+            pattern.append(weight)
+        else:
+            visited.extend(pattern)
+            visited.append(weight)
+            pattern = []
+    initial_len = len(visited) - len(pattern)
+    index = (cycles - initial_len) % len(pattern)-1
+    return pattern[index]
 
 
 def main():
