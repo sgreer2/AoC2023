@@ -53,7 +53,7 @@ def _solve(contraption_map: list[str],
            start_pos: tuple[int, int],
            start_direction: Direction
            ) -> int:
-    visited: list[tuple[tuple[int, int], Direction]] = []
+    visited: dict[tuple[int, int], list[Direction]] = {}
     beams: list[Beam] = []
     beams.append(Beam(start_pos[0], start_pos[1], start_direction))
     for beam in beams:
@@ -65,11 +65,13 @@ def _solve(contraption_map: list[str],
                 break
             if cur_x >= len(contraption_map[0]) or cur_y >= len(contraption_map[1]):
                 break
-            if ((cur_x, cur_y), beam.direction) in visited:
-                break
 
-            # add to visited
-            visited.append(((cur_x, cur_y), beam.direction))
+            if (cur_x, cur_y) in visited.keys():
+                if beam.direction in visited[(cur_x, cur_y)]:
+                    break
+                visited[(cur_x, cur_y)].append(beam.direction)
+            else:
+                visited[(cur_x, cur_y)] = [beam.direction]
 
             # figure out next position
             pos_char = contraption_map[cur_y][cur_x]
@@ -136,12 +138,7 @@ def _solve(contraption_map: list[str],
                 beam.move(x=x, y=y)
                 beam.direction = new_dir
 
-    temp = []
-    for pos, _ in visited:
-        if pos in temp:
-            continue
-        temp.append(pos)
-    return len(temp)
+    return len(visited)
 
 
 def p1(contraption_map: list[str]) -> int:
