@@ -13,10 +13,10 @@ class Beam:
     y: int
     direction: Direction
 
-    def __init__(self, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, dir: Direction = Direction.East) -> None:
         self.x = x
         self.y = y
-        self.direction = Direction.East
+        self.direction = dir
 
     def _get_pos(self) -> tuple[int, int]:
         return (self.x, self.y)
@@ -49,10 +49,13 @@ def read_data():
         return f.read().split('\n')[:-1]
 
 
-def p1(contraption_map: list[str]) -> int:
+def _solve(contraption_map: list[str],
+           start_pos: tuple[int, int],
+           start_direction: Direction
+           ) -> int:
     visited: list[tuple[tuple[int, int], Direction]] = []
     beams: list[Beam] = []
-    beams.append(Beam(0, 0))
+    beams.append(Beam(start_pos[0], start_pos[1], start_direction))
     for beam in beams:
         while True:
             cur_x, cur_y = beam._get_pos()
@@ -141,8 +144,25 @@ def p1(contraption_map: list[str]) -> int:
     return len(temp)
 
 
-def p2(data) -> int:
-    return -1
+def p1(contraption_map: list[str]) -> int:
+    return _solve(contraption_map, (0, 0), Direction.East)
+
+
+def p2(contraption_map: list[str]) -> int:
+    start_positions: list[tuple[int, int, Direction]] = []
+    _max = len(contraption_map)
+    for i in range(_max):
+        start_positions.append((i, 0, Direction.South))
+        start_positions.append((0, i, Direction.East))
+        start_positions.append((i, _max-1, Direction.North))
+        start_positions.append((_max-1, i, Direction.West))
+
+    best = 0
+    for x, y, d in start_positions:
+        value = _solve(contraption_map, (x, y), d)
+        best = max(best, value)
+
+    return best
 
 
 def main():
@@ -156,4 +176,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 8034
-# Part 2 solution:
+# Part 2 solution: 8225
