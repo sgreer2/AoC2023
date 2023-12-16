@@ -43,7 +43,7 @@ In order to use the CLI getInput.py script you must first store you AoC session 
 | 13|  ✅  |  ✅  |1.16 ms     |
 | 14|  ✅  |  ✅  |0.4 ms      |
 | 15|  ✅  |  ✅  |3.4 ms      |
-| 16|  ⬛  |  ⬛  |            |
+| 16|  ✅  |  ✅  |TBD         |
 | 17|  ⬛  |  ⬛  |            |
 | 18|  ⬛  |  ⬛  |            |
 | 19|  ⬛  |  ⬛  |            |
