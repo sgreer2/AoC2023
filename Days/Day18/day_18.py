@@ -1,5 +1,5 @@
-from matplotlib.path import Path
 from enum import Enum
+from math import floor
 
 
 def read_data():
@@ -18,7 +18,8 @@ class D(Enum):
 class Instruction:
     direction: D
     value: int
-    string: str
+    direction_p2: D
+    value_p2: int
 
     def __init__(self, data: str) -> None:
         d, v, s = data.split(' ')
@@ -35,51 +36,50 @@ class Instruction:
 
         self.direction = direction
         self.value = int(v)
-        self.string = s[1:-1]
 
-    def get_locs(self, start: tuple[int, int]) -> list[tuple[int, int]]:
-        x, y = start
-        offset = self.direction.value
-        array: list[tuple[int, int]] = []
-        for _ in range(self.value):
-            x += offset[0]
-            y += offset[1]
-            array.append((x, y))
-        return array
+        d = s[-2]
+        match d:
+            case '3':
+                direction = D.North
+            case '0':
+                direction = D.East
+            case '1':
+                direction = D.South
+            case '2':
+                direction = D.West
 
-    def __str__(self) -> str:
-        return f'{self.direction}, {self.value}, {self.string}'
+        self.direction_p2 = direction
+        self.value_p2 = int(s[2:-2], 16)
+
+    def get_data(self, part_2: bool = False) -> tuple[D, int]:
+        if part_2:
+            return (self.direction_p2, self.value_p2)
+        return (self.direction, self.value)
+
+
+def _solve(instructions: list[Instruction], part_2: bool = False) -> int:
+    area = 0
+    coord = [0, 0]
+    perimiter = 0
+    for inst in instructions:
+        direction, length = inst.get_data(part_2)
+        perimiter += length
+        coord[0] += direction.value[0] * length
+        coord[1] += direction.value[1] * length
+        if direction == D.North:
+            area -= (length * coord[0])
+            continue
+        if direction == D.South:
+            area += (length * coord[0])
+    return int(area + floor(perimiter/2) + 1)
 
 
 def p1(instructions: list[Instruction]) -> int:
-    start = (0, 0)
-    locations: list[tuple[int, int]] = [start]
-    min_x, max_x = 0, 0
-    min_y, max_y = 0, 0
-    for inst in instructions:
-        cur_loc = locations[-1]
-        locs = inst.get_locs(cur_loc)
-        for loc in locs:
-            min_x = min(min_x, loc[0])
-            max_x = max(max_x, loc[0])
-            min_y = min(min_y, loc[1])
-            max_y = max(max_y, loc[1])
-            locations.append(loc)
-    path = Path(locations)
-    count = 0
-    for y in range(min_y, max_y+1):
-        for x in range(min_x, max_x+1):
-            point = (x, y)
-            if point in locations:
-                count += 1
-                continue
-            if path.contains_point(point):
-                count += 1
-    return count
+    return _solve(instructions)
 
 
 def p2(instructions: list[Instruction]) -> int:
-    return -1
+    return _solve(instructions, True)
 
 
 def main():
@@ -92,5 +92,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Part 1 solution:
-# Part 2 solution:
+# Part 1 solution: 56678
+# Part 2 solution: 79088855654037
