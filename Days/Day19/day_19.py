@@ -7,13 +7,16 @@ def read_data():
         return _parse_data(f.read().split('\n\n'))
 
 
-def _parse_data(raw_data: list[str]) -> tuple[list, list]:
+def _parse_data(raw_data: list[str]) -> tuple[dict, list]:
     raw_workflows, raw_parts = raw_data
+    workflows: dict[str, tuple[str, list[Rule]]] = {}
 
-    workflows: list[Workflow] = []
     for line in raw_workflows.split('\n'):
-        name, rules = line.split('{')
-        workflows.append(Workflow(name, rules[:-1]))
+        name, raw_rules = line.split('{')
+        rules = raw_rules[:-1].split(',')
+        workflows[name] = (rules[-1], [])
+        for rule in rules[:-1]:
+            workflows[name][1].append(Rule(rule))
 
     parts: list[Part] = []
     for line in raw_parts.split('\n'):
@@ -40,9 +43,6 @@ class Part:
 
     def total(self) -> int:
         return self.x + self.m + self.a + self.s
-
-    def __str__(self) -> str:
-        return f'{self.x}, {self.m}, {self.a}, {self.s}'
 
 
 class Rule:
@@ -85,42 +85,20 @@ class Rule:
             return True
         return False
 
-    def __str__(self) -> str:
-        return f'{self.label}, {self.lt}, {self.value}, {self.accept_dest}'
 
-
-class Workflow:
-    name: str
-    rules: list[Rule]
-    reject: str
-
-    def __init__(self, name: str, raw_rules: str) -> None:
-        self.name = name
-        raw_rules_list = raw_rules.split(',')
-        self.reject = raw_rules_list[-1]
-        self.rules = []
-        for rule in raw_rules_list[:-1]:
-            self.rules.append(Rule(rule))
-
-    def next_destination(self, part: Part) -> str:
-        for rule in self.rules:
-            if rule.valid(part):
-                return rule.accept_dest
-        return self.reject
-
-
-def p1(workflows: list[Workflow], parts: list[Part]) -> int:
+def p1(workflows: dict[str, tuple[str, list[Rule]]], parts: list[Part]) -> int:
     start_label = 'in'
     total = 0
     for part in parts:
         cur_label = start_label
         while True:
-            wf_index = 0
-            for i, wf in enumerate(workflows):
-                if wf.name == cur_label:
-                    wf_index = i
+            next_label = ''
+            for rule in workflows[cur_label][1]:
+                if rule.valid(part):
+                    next_label = rule.accept_dest
                     break
-            next_label = workflows[wf_index].next_destination(part)
+                next_label = workflows[cur_label][0]
+
             if next_label == 'A':
                 total += part.total()
                 break
@@ -130,13 +108,59 @@ def p1(workflows: list[Workflow], parts: list[Part]) -> int:
     return total
 
 
-def p2(workflows: list[Workflow], parts: list[Part]) -> int:
-    return -1
+def p2(workflows: dict[str, tuple[str, list[Rule]]]) -> int:
+    final_ranges_list: list[dict] = []
+    ranges = {'x': (1, 4000), 'm': (1, 4000), 'a': (1, 4000), 's': (1, 4000)}
+    queue: list[tuple[str, dict]] = [('in', ranges)]
+
+    while len(queue) > 0:
+        wf, part_ranges = queue.pop()
+        cur_wf = workflows[wf]
+        for rule in cur_wf[1]:
+            alt_part_ranges = part_ranges.copy()
+
+            if rule.lt:
+                alt_part_ranges[rule.label] = (
+                    alt_part_ranges[rule.label][0],
+                    rule.value-1
+                )
+                part_ranges[rule.label] = (
+                    rule.value,
+                    part_ranges[rule.label][1]
+                )
+            elif not rule.lt:
+                alt_part_ranges[rule.label] = (
+                    rule.value + 1,
+                    alt_part_ranges[rule.label][1]
+                )
+                part_ranges[rule.label] = (
+                    part_ranges[rule.label][0],
+                    rule.value
+                )
+            if rule.accept_dest in ['A', 'R']:
+                if rule.accept_dest == 'A':
+                    final_ranges_list.append(alt_part_ranges.copy())
+            else:
+                queue.append((rule.accept_dest, alt_part_ranges.copy()))
+
+        if cur_wf[0] in ['A', 'R']:
+            if cur_wf[0] == 'A':
+                final_ranges_list.append(part_ranges.copy())
+        else:
+            queue.append((cur_wf[0], part_ranges.copy()))
+
+    total = 0
+    for ranges in final_ranges_list:
+        cur_total = 1
+        for a, b in ranges.values():
+            cur_total *= (b-a) + 1
+        total += cur_total
+    return total
 
 
 def main():
     workflows, parts = read_data()
-    s1, s2 = p1(workflows, parts), p2(workflows, parts)
+    s1, s2 = p1(workflows, parts), p2(workflows)
     print(f'P1: {s1}')
     print(f'P2: {s2}')
 
@@ -145,4 +169,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 287054
-# Part 2 solution:
+# Part 2 solution: 131619440296497
