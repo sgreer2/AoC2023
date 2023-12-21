@@ -15,21 +15,19 @@ class D(Enum):
 
 
 def p1(plot: list[str], step_limit: int = 64) -> int:
-    gardens: list[tuple[int, int]] = []
-    rocks: list[tuple[int, int]] = []
-    stepped_locations: list[tuple[int, int]] = []
+    rocks: dict[tuple[int, int], bool] = dict()
+    stepped_locations: set[tuple[int, int]] = set()
     for y, line in enumerate(plot):
         for x in range(len(line)):
             if line[x] == '.':
-                gardens.append((x, y))
                 continue
             if line[x] == '#':
-                rocks.append((x, y))
+                rocks[(x, y)] = True
                 continue
-            stepped_locations.append((x, y))
+            stepped_locations.add((x, y))
 
     for _ in range(step_limit):
-        new_stepped_locations: list[tuple[int, int]] = []
+        new_stepped_locations: set[tuple[int, int]] = set()
         for x, y in stepped_locations:
             for dir in D:
                 n_x, n_y = dir.value
@@ -37,7 +35,7 @@ def p1(plot: list[str], step_limit: int = 64) -> int:
                 if new_pos in rocks:
                     continue
                 if new_pos not in new_stepped_locations:
-                    new_stepped_locations.append(new_pos)
+                    new_stepped_locations.add(new_pos)
         stepped_locations = new_stepped_locations
     return len(stepped_locations)
 
@@ -47,7 +45,6 @@ def p2(data) -> int:
 
 
 def main():
-    print(10 % 10)
     plot = read_data()
     s1, s2 = p1(plot), p2(plot)
     print(f'P1: {s1}')
