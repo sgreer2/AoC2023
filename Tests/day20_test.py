@@ -1,4 +1,4 @@
-from Days.Day20.day_20 import p1, p2, _module_parse
+from Days.Day20.day_20 import p1, _module_parse
 
 
 def test_p1_v1():
@@ -22,8 +22,4 @@ def test_p1_v2():
     ]
     assert p1(_module_parse(test_data)) == 11687500
 
-# def test_p2():
-#     test_data = [
-
-#     ]
-#     assert p2(test_data) == -1
+# No test provided for Part 2
