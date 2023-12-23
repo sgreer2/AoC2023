@@ -1,3 +1,4 @@
+from collections import deque
 from enum import Enum
 
 
@@ -66,6 +67,26 @@ def _solve(hiking_map: list[str], hike_lengths: list[int], cur_pos: tuple[int, i
         break
 
 
+def _solve_part2(inter_dict: dict[tuple[int, int], set[tuple[int, tuple[int, int]]]],
+                 current_intersection: tuple[int, int],
+                 steps: int,
+                 goal: tuple[int, int],
+                 highest: list[int],
+                 history: list[tuple[int, int]]):
+    if current_intersection == goal:
+        if steps > highest[0]:
+            highest[0] = steps
+            return
+    for distance, destination in inter_dict[current_intersection]:
+        if destination in history:
+            continue
+        local_history = history.copy()
+        local_history.append(current_intersection)
+        _solve_part2(inter_dict, destination,
+                     steps + distance,
+                     goal, highest, local_history)
+
+
 def p1(hiking_map: list[str]) -> int:
     start = (1, 0)
     end = (len(hiking_map[0])-2, len(hiking_map)-1)
@@ -77,7 +98,58 @@ def p1(hiking_map: list[str]) -> int:
 
 
 def p2(hiking_map: list[str]) -> int:
-    return -1
+    start = (1, 0)
+    end = (len(hiking_map[0])-2, len(hiking_map)-1)
+
+    intersections: dict[tuple[int, int],
+                        set[tuple[int, tuple[int, int]]]
+                        ] = {}
+    intersections[start] = set()
+    intersections[end] = set()
+    intersection_queue: deque[tuple[tuple[int, int],
+                                    D, tuple[int, int]]] = deque()
+    intersection_queue.append((start, D.SOUTH, start))
+    while intersection_queue:
+        cur_pos, last_direction, last_intersection = intersection_queue.popleft()
+        distance = 1
+        if cur_pos == start:
+            distance = 0
+
+        while True:
+            if cur_pos in intersections.keys() and cur_pos != start:
+                intersections[cur_pos].add((distance, last_intersection))
+                intersections[last_intersection].add((distance, cur_pos))
+                break
+            directions = _get_directions(last_direction)
+            step_options: list[tuple[tuple[int, int], D]] = []
+            for direction in directions:
+                n_pos_x = cur_pos[0] + direction.value[0]
+                n_pos_y = cur_pos[1] + direction.value[1]
+                hike_char = hiking_map[n_pos_y][n_pos_x]
+                if hike_char == '#':
+                    continue
+                step_options.append(((n_pos_x, n_pos_y), direction))
+
+            if len(step_options) == 0:
+                break
+
+            if len(step_options) == 1:
+                cur_pos = step_options[0][0]
+                last_direction = step_options[0][1]
+                distance += 1
+                continue
+
+            intersections[cur_pos] = set()
+            intersections[cur_pos].add((distance, last_intersection))
+            intersections[last_intersection].add((distance, cur_pos))
+            for pos, dir in step_options:
+                intersection_queue.append((pos, dir, cur_pos))
+            break
+
+    highest = [0]
+    _solve_part2(intersections, start, 0, end, highest, [])
+
+    return highest[0]
 
 
 def main():
@@ -91,4 +163,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 2202
-# Part 2 solution:
+# Part 2 solution: 6226
