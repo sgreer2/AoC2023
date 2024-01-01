@@ -1,6 +1,7 @@
 from __future__ import annotations
-from re import findall
+from collections import deque
 from copy import deepcopy
+from re import findall
 
 
 def read_data():
@@ -143,7 +144,51 @@ def p1(bricks: list[Brick]) -> int:
 
 
 def p2(bricks: list[Brick]) -> int:
-    return -1
+    bricks = _drop_sand_bricks(bricks)
+    total_drop_count = 0
+    for current_brick in bricks:
+        can_fall = set()
+        queue: deque[Brick] = deque()
+        queue.append(current_brick)
+
+        while queue:
+            c_brick = queue.popleft()
+
+            # check the bricks above c_brick
+            above_bricks: list[Brick] = []
+            for secondary_brick in bricks:
+                if secondary_brick.lowest_point != c_brick.highest_point+1:
+                    continue
+                if c_brick.brick_overlap_horizontal(secondary_brick):
+                    above_bricks.append(secondary_brick)
+            if len(above_bricks) == 0:
+                continue
+
+            # check bricks below each above_brick
+            for a_brick in above_bricks:
+                below_bricks = []
+                for secondary_brick in bricks:
+                    if a_brick.lowest_point != secondary_brick.highest_point+1:
+                        continue
+                    if a_brick.brick_overlap_horizontal(secondary_brick):
+                        below_bricks.append(secondary_brick)
+                if len(below_bricks) == 1:
+                    can_fall.add(a_brick)
+                    queue.append(a_brick)
+                    continue
+                valid = True
+                for b_brick in below_bricks:
+                    if b_brick == c_brick:
+                        continue
+                    if b_brick not in can_fall:
+                        valid = False
+                        continue
+                if valid:
+                    queue.append(a_brick)
+                    can_fall.add(a_brick)
+        total_drop_count += len(can_fall)
+
+    return total_drop_count
 
 
 def main():
@@ -157,4 +202,4 @@ if __name__ == '__main__':
     main()
 
 # Part 1 solution: 391
-# Part 2 solution:
+# Part 2 solution: 69601
