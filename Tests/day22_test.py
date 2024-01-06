@@ -1,4 +1,4 @@
-from Days.Day22.day_22 import p1, p2, Brick
+from Days.Day22.day_22 import p1, p2, data_to_dict
 
 
 def test_p1():
@@ -11,8 +11,7 @@ def test_p1():
         '0,1,6~2,1,6',
         '1,1,8~1,1,9'
     ]
-    bricks = [Brick(line) for line in test_data]
-    assert p1(bricks) == 5
+    assert p1(data_to_dict(test_data)) == 5
 
 
 def test_p2():
@@ -25,5 +24,4 @@ def test_p2():
         '0,1,6~2,1,6',
         '1,1,8~1,1,9'
     ]
-    bricks = [Brick(line) for line in test_data]
-    assert p2(bricks) == 7
+    assert p2(data_to_dict(test_data)) == 7
